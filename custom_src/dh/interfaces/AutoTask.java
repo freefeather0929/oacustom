@@ -1,49 +1,38 @@
-/*  1:   */ package weaver.dh.interfaces;
-/*  2:   */ 
-/*  3:   */ import dinghan.workflow.beans.ChuChai2;
-/*  4:   */ import dinghan.workflow.beans.Jbtemp;
-/*  5:   */ import dinghan.workflow.beans.JiaBan1;
-/*  6:   */ import dinghan.workflow.beans.QingJia;
-/*  7:   */ import dinghan.workflow.beans.WaiChu;
-/*  8:   */ import org.apache.commons.logging.Log;
-/*  9:   */ import org.apache.commons.logging.LogFactory;
-/* 10:   */ import weaver.interfaces.schedule.BaseCronJob;
-/* 11:   */ 
-/* 12:   */ public class AutoTask
-/* 13:   */   extends BaseCronJob
-/* 14:   */ {
-/* 15:14 */   private Log log = LogFactory.getLog(AutoTask.class.getName());
-/* 16:   */   
-/* 17:   */   public Log getLog()
-/* 18:   */   {
-/* 19:17 */     return this.log;
-/* 20:   */   }
-/* 21:   */   
-/* 22:   */   public void setLog(Log log)
-/* 23:   */   {
-/* 24:21 */     this.log = log;
-/* 25:   */   }
-/* 26:   */   
-/* 27:   */   public void execute()
-/* 28:   */   {
-/* 29:   */     try
-/* 30:   */     {
-/* 31:27 */       this.log.error("核定明细开始");
-/* 32:28 */       QingJia.checkList(0);
-/* 33:29 */       ChuChai2.checkList(0);
-/* 34:30 */       WaiChu.checkList(0);
-/* 35:31 */       JiaBan1.checkList(0);
-/* 36:32 */       Jbtemp.insertJb();
-/* 37:   */     }
-/* 38:   */     catch (Exception e)
-/* 39:   */     {
-/* 40:35 */       e.printStackTrace();
-/* 41:   */     }
-/* 42:   */   }
-/* 43:   */ }
+package weaver.dh.interfaces;
 
-
-/* Location:           F:\oa_back\oacustom\custom_class\dh\interfaces\
- * Qualified Name:     weaver.dh.interfaces.AutoTask
- * JD-Core Version:    0.7.0.1
- */
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import weaver.interfaces.schedule.BaseCronJob;
+import dinghan.workflow.beans.ChuChai2;
+import dinghan.workflow.beans.Jbtemp;
+import dinghan.workflow.beans.JiaBan1;
+import dinghan.workflow.beans.QingJia;
+import dinghan.workflow.beans.WaiChu;
+
+public class AutoTask extends BaseCronJob {
+	private Log log = LogFactory.getLog(AutoTask.class.getName());
+
+	public Log getLog() {
+		return log;
+	}
+
+	public void setLog(Log log) {
+		this.log = log;
+	}
+
+	@Override
+	public void execute() {
+		try {
+			log.error("核定明细开始");
+			QingJia.checkList(0);
+			ChuChai2.checkList(0);
+			WaiChu.checkList(0);
+			JiaBan1.checkList(0);
+			Jbtemp.insertJb();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}

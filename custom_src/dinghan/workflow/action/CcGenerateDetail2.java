@@ -1,111 +1,98 @@
-/*  1:   */ package dinghan.workflow.action;
-/*  2:   */ 
-/*  3:   */ import dinghan.workflow.beans.Cctemp;
-/*  4:   */ import dinghan.workflow.beans.ChuChai;
-/*  5:   */ import dinghan.workflow.beans.ChuChai2;
-/*  6:   */ import dinghan.workflow.beans.UserInfo;
-/*  7:   */ import java.text.SimpleDateFormat;
-/*  8:   */ import java.util.Calendar;
-/*  9:   */ import java.util.Date;
-/* 10:   */ import java.util.GregorianCalendar;
-/* 11:   */ import org.apache.commons.logging.Log;
-/* 12:   */ import org.apache.commons.logging.LogFactory;
-/* 13:   */ import weaver.interfaces.workflow.action.Action;
-/* 14:   */ import weaver.soa.workflow.request.RequestInfo;
-/* 15:   */ import weaver.workflow.request.RequestManager;
-/* 16:   */ 
-/* 17:   */ public class CcGenerateDetail2
-/* 18:   */   implements Action
-/* 19:   */ {
-/* 20:19 */   private Log log = LogFactory.getLog(CcGenerateDetail.class.getName());
-/* 21:   */   
-/* 22:   */   public Log getLog()
-/* 23:   */   {
-/* 24:22 */     return this.log;
-/* 25:   */   }
-/* 26:   */   
-/* 27:   */   public void setLog(Log log)
-/* 28:   */   {
-/* 29:26 */     this.log = log;
-/* 30:   */   }
-/* 31:   */   
-/* 32:   */   public String execute(RequestInfo request)
-/* 33:   */   {
-/* 34:32 */     String returninfo = "0";
-/* 35:33 */     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-/* 36:   */     try
-/* 37:   */     {
-/* 38:35 */       this.log.error("hahahahah");
-/* 39:36 */       String requestid = request.getRequestid();
-/* 40:   */       
-/* 41:38 */       int nodeid = request.getRequestManager().getNodeid();
-/* 42:   */       
-/* 43:40 */       ChuChai cc_main = new ChuChai(requestid);
-/* 44:41 */       int userid = cc_main.getProposer();
-/* 45:42 */       int mainid = cc_main.getId();
-/* 46:   */       
-/* 47:44 */       UserInfo userInfo = new UserInfo(userid);
-/* 48:   */       
-/* 49:46 */       ChuChai2.delete(mainid, 0);
-/* 50:   */       
-/* 51:48 */       Date dsDate = sdf.parse(cc_main.getSjkssj());
-/* 52:49 */       Date deDate = sdf.parse(cc_main.getSjjssj());
-/* 53:   */       
-/* 54:51 */       long dNum = (deDate.getTime() - dsDate.getTime()) / 
-/* 55:52 */         86400000L + 1L;
-/* 56:54 */       for (int j = 0; j < dNum; j++)
-/* 57:   */       {
-/* 58:55 */         Calendar calendar = new GregorianCalendar();
-/* 59:56 */         calendar.setTime(dsDate);
-/* 60:57 */         calendar.add(5, j);
-/* 61:58 */         String dsDateString = sdf.format(calendar.getTime());
-/* 62:   */         
-/* 63:60 */         ChuChai2 cc_two = new ChuChai2();
-/* 64:61 */         cc_two.setCcrq(dsDateString);
-/* 65:62 */         cc_two.setMainid(mainid);
-/* 66:63 */         cc_two.setUserid(userid);
-/* 67:64 */         cc_two.setHdjssj("");
-/* 68:65 */         cc_two.setHdkssj("");
-/* 69:66 */         cc_two.setRow_id(j + 1);
-/* 70:68 */         if (dsDate.equals(deDate))
-/* 71:   */         {
-/* 72:69 */           cc_two.setYjkssj(cc_main.getKssj1());
-/* 73:70 */           cc_two.setYjjssj(cc_main.getKssj3());
-/* 74:   */         }
-/* 75:72 */         else if (j == 0)
-/* 76:   */         {
-/* 77:73 */           cc_two.setYjkssj(cc_main.getKssj1());
-/* 78:74 */           cc_two.setYjjssj(userInfo.getEndWorkTime());
-/* 79:   */         }
-/* 80:75 */         else if (j + 1 == dNum)
-/* 81:   */         {
-/* 82:76 */           cc_two.setYjkssj(userInfo.getStartWorkTime());
-/* 83:77 */           cc_two.setYjjssj(cc_main.getKssj3());
-/* 84:   */         }
-/* 85:   */         else
-/* 86:   */         {
-/* 87:79 */           cc_two.setYjkssj(userInfo.getStartWorkTime());
-/* 88:80 */           cc_two.setYjjssj(userInfo.getEndWorkTime());
-/* 89:   */         }
-/* 90:84 */         cc_two.insert();
-/* 91:   */       }
-/* 92:87 */       Cctemp.delete(cc_main.getId());
-/* 93:88 */       ChuChai2.checkList(cc_main.getId());
-/* 94:89 */       returninfo = "1";
-/* 95:   */     }
-/* 96:   */     catch (Exception e)
-/* 97:   */     {
-/* 98:92 */       this.log.error("生成出差明细失败：" + e);
-/* 99:   */     }
-/* :0:   */     finally
-/* :1:   */     {
-/* :2:94 */       return returninfo;
-/* :3:   */     }
-/* :4:   */   }
-/* :5:   */ }
+package dinghan.workflow.action;
 
-
-/* Location:           F:\oa_back\oacustom\custom_class\
- * Qualified Name:     dinghan.workflow.action.CcGenerateDetail2
- * JD-Core Version:    0.7.0.1
- */
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import weaver.interfaces.workflow.action.Action;
+import weaver.soa.workflow.request.RequestInfo;
+import dinghan.workflow.beans.Cctemp;
+import dinghan.workflow.beans.ChuChai;
+import dinghan.workflow.beans.ChuChai2;
+import dinghan.workflow.beans.UserInfo;
+
+public class CcGenerateDetail2 implements Action {
+	private Log log = LogFactory.getLog(CcGenerateDetail.class.getName());
+
+	public Log getLog() {
+		return log;
+	}
+
+	public void setLog(Log log) {
+		this.log = log;
+	}
+
+	@SuppressWarnings("finally")
+	@Override
+	public String execute(RequestInfo request) {
+		String returninfo = FAILURE_AND_CONTINUE;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			log.error("hahahahah");
+			String requestid = request.getRequestid();// 得到requestid
+
+			int nodeid = request.getRequestManager().getNodeid();// 589开始节点
+
+			ChuChai cc_main = new ChuChai(requestid);// 通过requestid得到主表信息
+			int userid = cc_main.getProposer();// 用户id
+			int mainid = cc_main.getId(); // 主表id
+
+			UserInfo userInfo = new UserInfo(userid);// 得到用户信息
+
+			ChuChai2.delete(mainid, 0);// 删除明细表二的数据
+
+			Date dsDate = sdf.parse(cc_main.getSjkssj());
+			Date deDate = sdf.parse(cc_main.getSjjssj());
+
+			long dNum = (deDate.getTime() - dsDate.getTime())
+					/ (1000 * 60 * 60 * 24) + 1;// 实际出差天数
+
+			for (int j = 0; j < dNum; j++) {
+				Calendar calendar = new GregorianCalendar();
+				calendar.setTime(dsDate);
+				calendar.add(calendar.DATE, j);
+				String dsDateString = sdf.format(calendar.getTime());// 明细日期字符串
+
+				ChuChai2 cc_two = new ChuChai2();
+				cc_two.setCcrq(dsDateString);
+				cc_two.setMainid(mainid);
+				cc_two.setUserid(userid);
+				cc_two.setHdjssj("");
+				cc_two.setHdkssj("");
+				cc_two.setRow_id(j + 1);
+				// 根据日期的不同进行区分插入
+				if (dsDate.equals(deDate)) {// 当开始日期等于结束日期时
+					cc_two.setYjkssj(cc_main.getKssj1());
+					cc_two.setYjjssj(cc_main.getKssj3());
+				} else { // 开始日期不等于结束日期时
+					if (j == 0) { // 第一天
+						cc_two.setYjkssj(cc_main.getKssj1());
+						cc_two.setYjjssj(userInfo.getEndWorkTime());
+					} else if (j + 1 == dNum) {// 最后一天
+						cc_two.setYjkssj(userInfo.getStartWorkTime());
+						cc_two.setYjjssj(cc_main.getKssj3());
+					} else { // 中间
+						cc_two.setYjkssj(userInfo.getStartWorkTime());
+						cc_two.setYjjssj(userInfo.getEndWorkTime());
+					}
+				}
+
+				cc_two.insert();
+
+			}
+			Cctemp.delete(cc_main.getId());
+			ChuChai2.checkList(cc_main.getId());
+			returninfo = Action.SUCCESS;
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.error("生成出差明细失败：" + e);
+		} finally {
+			return returninfo;
+		}
+
+	}
+}

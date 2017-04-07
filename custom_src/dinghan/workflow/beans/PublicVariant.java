@@ -1,75 +1,101 @@
-/*  1:   */ package dinghan.workflow.beans;
-/*  2:   */ 
-/*  3:   */ import java.text.SimpleDateFormat;
-/*  4:   */ import java.util.Calendar;
-/*  5:   */ import java.util.Date;
-/*  6:   */ import java.util.GregorianCalendar;
-/*  7:   */ 
-/*  8:   */ public class PublicVariant
-/*  9:   */ {
-/* 10:   */   public static String DateToStr(Date date, String format)
-/* 11:   */     throws Exception
-/* 12:   */   {
-/* 13:16 */     SimpleDateFormat df = new SimpleDateFormat(format);
-/* 14:17 */     String str = df.format(date);
-/* 15:18 */     return str;
-/* 16:   */   }
-/* 17:   */   
-/* 18:   */   public static Date StrToDate(String str, String format)
-/* 19:   */     throws Exception
-/* 20:   */   {
-/* 21:31 */     SimpleDateFormat df = new SimpleDateFormat(format);
-/* 22:32 */     Date date = df.parse(str);
-/* 23:33 */     return date;
-/* 24:   */   }
-/* 25:   */   
-/* 26:   */   public static Date AdjustDateTime(Date date, int... args)
-/* 27:   */     throws Exception
-/* 28:   */   {
-/* 29:44 */     Calendar calendar = new GregorianCalendar();
-/* 30:45 */     calendar.setTime(date);
-/* 31:46 */     switch (args.length)
-/* 32:   */     {
-/* 33:   */     case 6: 
-/* 34:48 */       calendar.add(13, args[5]);
-/* 35:   */     case 5: 
-/* 36:50 */       calendar.add(12, args[4]);
-/* 37:   */     case 4: 
-/* 38:52 */       calendar.add(10, args[3]);
-/* 39:   */     case 3: 
-/* 40:54 */       calendar.add(5, args[2]);
-/* 41:   */     case 2: 
-/* 42:56 */       calendar.add(2, args[1]);
-/* 43:   */     case 1: 
-/* 44:58 */       calendar.add(1, args[0]);
-/* 45:   */     }
-/* 46:60 */     return calendar.getTime();
-/* 47:   */   }
-/* 48:   */   
-/* 49:   */   public static String toUTF8(String ss)
-/* 50:   */     throws Exception
-/* 51:   */   {
-/* 52:64 */     if (ss == null) {
-/* 53:65 */       ss = "";
-/* 54:   */     }
-/* 55:66 */     ss = new String(ss.getBytes("ISO-8859-1"), "UTF8");
-/* 56:67 */     return ss;
-/* 57:   */   }
-/* 58:   */   
-/* 59:   */   public static long getTimeDifference(String startTime, String endTime)
-/* 60:   */     throws Exception
-/* 61:   */   {
-/* 62:81 */     long l = 0L;
-/* 63:82 */     Date dt = StrToDate(startTime, "yyyy-MM-dd HH:mm");
-/* 64:83 */     l = dt.getTime();
-/* 65:84 */     dt = StrToDate(endTime, "yyyy-MM-dd HH:mm");
-/* 66:85 */     l -= dt.getTime();
-/* 67:86 */     return Math.abs(l);
-/* 68:   */   }
-/* 69:   */ }
+package dinghan.workflow.beans;
 
-
-/* Location:           F:\oa_back\oacustom\custom_class\
- * Qualified Name:     dinghan.workflow.beans.PublicVariant
- * JD-Core Version:    0.7.0.1
- */
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+public class PublicVariant {
+	/**
+	 * 日期转换成字符串
+	 * 
+	 * @param date
+	 * @return str
+	 */
+	public static String DateToStr(Date date, String format) throws Exception {
+		SimpleDateFormat df = new SimpleDateFormat(format);
+		String str = df.format(date);
+		return str;
+	}
+
+	/**
+	 * 字符串转换成日期
+	 * 
+	 * @param str
+	 * @return date
+	 * @throws ParseException
+	 * @throws Exception
+	 */
+	public static Date StrToDate(String str, String format) throws Exception {
+		// 要求str的组成格式和format一致
+		SimpleDateFormat df = new SimpleDateFormat(format);
+		Date date = df.parse(str);
+		return date;
+
+	}
+
+	/**
+	 * 日期加减操作
+	 * 
+	 * @param args
+	 *            -数组，顺序为：年、月、日、时、分、秒
+	 */
+	public static Date AdjustDateTime(Date date, int... args) throws Exception {
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(date);
+		switch (args.length) {
+		case 6: // 秒
+			calendar.add(Calendar.SECOND, args[5]);
+		case 5: // 分
+			calendar.add(Calendar.MINUTE, args[4]);
+		case 4: // 时
+			calendar.add(Calendar.HOUR, args[3]);
+		case 3: // 日
+			calendar.add(Calendar.DATE, args[2]);
+		case 2: // 月
+			calendar.add(Calendar.MONTH, args[1]);
+		case 1: // 年
+			calendar.add(Calendar.YEAR, args[0]);
+		}
+		return calendar.getTime();
+	}
+
+	public static String toUTF8(String ss) throws Exception {
+		if (ss == null)
+			ss = "";
+		ss = new String(ss.getBytes("ISO-8859-1"), "UTF8");
+		return ss;
+	}
+
+	/*	*//**
+	 * 计算两个时间差
+	 * 
+	 * @param startTime
+	 * @param endTime
+	 * @return 返回豪秒数
+	 * @throws Exception
+	 */
+
+	public static long getTimeDifference(String startTime, String endTime)
+			throws Exception {
+		long l = 0;
+		Date dt = PublicVariant.StrToDate(startTime, "yyyy-MM-dd HH:mm");
+		l = dt.getTime();
+		dt = PublicVariant.StrToDate(endTime, "yyyy-MM-dd HH:mm");
+		l -= dt.getTime();
+		return Math.abs(l);
+	}
+
+	/*
+	 * public static String getWeek(String date) throws Exception { String week
+	 * = "";
+	 * 
+	 * LocalDate dd = LocalDate.parse(date, DateTimeFormatter.ISO_DATE); switch
+	 * (dd.get(ChronoField.DAY_OF_WEEK)) { case 1: week = "星期一"; break; case 2:
+	 * week = "星期二"; break; case 3: week = "星期三"; break; case 4: week = "星期四";
+	 * break; case 5: week = "星期五"; break; case 6: week = "星期六"; break; case 7:
+	 * week = "星期日"; break;
+	 * 
+	 * } return week; }
+	 */
+}

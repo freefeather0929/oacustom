@@ -1,12 +1,6 @@
 package weaver.dh.interfaces;
 
-public abstract interface toMiddleTable
-{
-  public abstract void execute(String paramString1, String paramString2, String paramString3);
+public interface toMiddleTable {
+	
+	public void execute(String xml,String Tablename,String flag);
 }
-
-
-/* Location:           F:\oa_back\oacustom\custom_class\dh\interfaces\
- * Qualified Name:     weaver.dh.interfaces.toMiddleTable
- * JD-Core Version:    0.7.0.1
- */

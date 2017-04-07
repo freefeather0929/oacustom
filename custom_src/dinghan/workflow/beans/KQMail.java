@@ -1,231 +1,206 @@
-/*   1:    */ package dinghan.workflow.beans;
-/*   2:    */ 
-/*   3:    */ import dinghan.workflow.service.kqservice.MyAuthenticator;
-/*   4:    */ import java.util.Date;
-/*   5:    */ import java.util.Properties;
-/*   6:    */ import javax.mail.BodyPart;
-/*   7:    */ import javax.mail.Message;
-/*   8:    */ import javax.mail.Message.RecipientType;
-/*   9:    */ import javax.mail.MessagingException;
-/*  10:    */ import javax.mail.Multipart;
-/*  11:    */ import javax.mail.Session;
-/*  12:    */ import javax.mail.Transport;
-/*  13:    */ import javax.mail.internet.InternetAddress;
-/*  14:    */ import javax.mail.internet.MimeBodyPart;
-/*  15:    */ import javax.mail.internet.MimeMessage;
-/*  16:    */ import javax.mail.internet.MimeMultipart;
-/*  17:    */ 
-/*  18:    */ public class KQMail
-/*  19:    */ {
-/*  20: 24 */   private String host = null;
-/*  21: 25 */   private String port = "25";
-/*  22: 26 */   private boolean validate = false;
-/*  23: 27 */   private String[] recipients = null;
-/*  24: 28 */   private String[] recipientsName = null;
-/*  25: 29 */   private String subject = null;
-/*  26: 30 */   private String content = null;
-/*  27: 31 */   private String contentType = null;
-/*  28: 32 */   private String filePath = null;
-/*  29: 33 */   private String from = null;
-/*  30: 34 */   private String fromName = null;
-/*  31: 35 */   private String fromPwd = null;
-/*  32: 36 */   private MyAuthenticator auth = null;
-/*  33:    */   
-/*  34:    */   public void sendMail()
-/*  35:    */     throws MessagingException, Exception
-/*  36:    */   {
-/*  37: 41 */     if ((this.recipients != null) && (this.recipients.length > 0))
-/*  38:    */     {
-/*  39: 42 */       Properties props = new Properties();
-/*  40:    */       
-/*  41: 44 */       props.put("mail.smtp.host", this.host);
-/*  42: 45 */       props.put("mail.smtp.port", this.port);
-/*  43: 46 */       props.put("mail.smtp.auth", Boolean.valueOf(this.validate));
-/*  44: 47 */       props.put("mail.smtp.connectiontimeout", "30000");
-/*  45: 51 */       if (this.validate) {
-/*  46: 52 */         this.auth = new MyAuthenticator(this.from, this.fromPwd);
-/*  47:    */       }
-/*  48: 55 */       Session session = Session.getDefaultInstance(props, this.auth);
-/*  49:    */       
-/*  50: 57 */       Message msg = new MimeMessage(session);
-/*  51:    */       
-/*  52: 59 */       InternetAddress addressFrom = new InternetAddress(this.from, this.fromName);
-/*  53: 60 */       msg.setFrom(addressFrom);
-/*  54:    */       
-/*  55: 62 */       InternetAddress[] addressTo = new InternetAddress[this.recipients.length];
-/*  56: 63 */       for (int i = 0; i < this.recipients.length; i++) {
-/*  57: 64 */         addressTo[i] = new InternetAddress(this.recipients[i], this.recipientsName[i]);
-/*  58:    */       }
-/*  59: 66 */       msg.setRecipients(Message.RecipientType.TO, addressTo);
-/*  60:    */       
-/*  61:    */ 
-/*  62: 69 */       msg.setSubject(this.subject);
-/*  63: 71 */       if ((this.contentType == null) || (this.contentType.equals("text")))
-/*  64:    */       {
-/*  65: 72 */         msg.setText(this.content);
-/*  66:    */       }
-/*  67: 73 */       else if (this.contentType.equals("html"))
-/*  68:    */       {
-/*  69: 75 */         Multipart mmp = new MimeMultipart();
-/*  70: 76 */         BodyPart mbp1 = new MimeBodyPart();
-/*  71: 77 */         mbp1.setContent(this.content, "text/html;charset=utf-8");
-/*  72: 78 */         mmp.addBodyPart(mbp1);
-/*  73:    */         
-/*  74:    */ 
-/*  75:    */ 
-/*  76:    */ 
-/*  77:    */ 
-/*  78:    */ 
-/*  79:    */ 
-/*  80:    */ 
-/*  81:    */ 
-/*  82:    */ 
-/*  83:    */ 
-/*  84:    */ 
-/*  85:    */ 
-/*  86:    */ 
-/*  87:    */ 
-/*  88: 94 */         msg.setContent(mmp);
-/*  89:    */       }
-/*  90: 98 */       msg.setSentDate(new Date());
-/*  91:    */       
-/*  92:100 */       Transport.send(msg);
-/*  93:    */     }
-/*  94:    */   }
-/*  95:    */   
-/*  96:    */   public String getHost()
-/*  97:    */   {
-/*  98:106 */     return this.host;
-/*  99:    */   }
-/* 100:    */   
-/* 101:    */   public void setHost(String host)
-/* 102:    */   {
-/* 103:110 */     this.host = host;
-/* 104:    */   }
-/* 105:    */   
-/* 106:    */   public String getPort()
-/* 107:    */   {
-/* 108:114 */     return this.port;
-/* 109:    */   }
-/* 110:    */   
-/* 111:    */   public void setPort(String port)
-/* 112:    */   {
-/* 113:118 */     this.port = port;
-/* 114:    */   }
-/* 115:    */   
-/* 116:    */   public boolean isValidate()
-/* 117:    */   {
-/* 118:122 */     return this.validate;
-/* 119:    */   }
-/* 120:    */   
-/* 121:    */   public void setValidate(boolean validate)
-/* 122:    */   {
-/* 123:126 */     this.validate = validate;
-/* 124:    */   }
-/* 125:    */   
-/* 126:    */   public String[] getRecipients()
-/* 127:    */   {
-/* 128:130 */     return this.recipients;
-/* 129:    */   }
-/* 130:    */   
-/* 131:    */   public void setRecipients(String[] recipients)
-/* 132:    */   {
-/* 133:134 */     this.recipients = recipients;
-/* 134:    */   }
-/* 135:    */   
-/* 136:    */   public String[] getRecipientsName()
-/* 137:    */   {
-/* 138:138 */     return this.recipientsName;
-/* 139:    */   }
-/* 140:    */   
-/* 141:    */   public void setRecipientsName(String[] recipientsName)
-/* 142:    */   {
-/* 143:142 */     this.recipientsName = recipientsName;
-/* 144:    */   }
-/* 145:    */   
-/* 146:    */   public String getSubject()
-/* 147:    */   {
-/* 148:146 */     return this.subject;
-/* 149:    */   }
-/* 150:    */   
-/* 151:    */   public void setSubject(String subject)
-/* 152:    */   {
-/* 153:150 */     this.subject = subject;
-/* 154:    */   }
-/* 155:    */   
-/* 156:    */   public String getContent()
-/* 157:    */   {
-/* 158:154 */     return this.content;
-/* 159:    */   }
-/* 160:    */   
-/* 161:    */   public void setContent(String content)
-/* 162:    */   {
-/* 163:158 */     this.content = content;
-/* 164:    */   }
-/* 165:    */   
-/* 166:    */   public String getContentType()
-/* 167:    */   {
-/* 168:162 */     return this.contentType;
-/* 169:    */   }
-/* 170:    */   
-/* 171:    */   public void setContentType(String contentType)
-/* 172:    */   {
-/* 173:166 */     this.contentType = contentType;
-/* 174:    */   }
-/* 175:    */   
-/* 176:    */   public String getFilePath()
-/* 177:    */   {
-/* 178:170 */     return this.filePath;
-/* 179:    */   }
-/* 180:    */   
-/* 181:    */   public void setFilePath(String filePath)
-/* 182:    */   {
-/* 183:174 */     this.filePath = filePath;
-/* 184:    */   }
-/* 185:    */   
-/* 186:    */   public String getFrom()
-/* 187:    */   {
-/* 188:178 */     return this.from;
-/* 189:    */   }
-/* 190:    */   
-/* 191:    */   public void setFrom(String from)
-/* 192:    */   {
-/* 193:182 */     this.from = from;
-/* 194:    */   }
-/* 195:    */   
-/* 196:    */   public String getFromName()
-/* 197:    */   {
-/* 198:186 */     return this.fromName;
-/* 199:    */   }
-/* 200:    */   
-/* 201:    */   public void setFromName(String fromName)
-/* 202:    */   {
-/* 203:190 */     this.fromName = fromName;
-/* 204:    */   }
-/* 205:    */   
-/* 206:    */   public String getFromPwd()
-/* 207:    */   {
-/* 208:194 */     return this.fromPwd;
-/* 209:    */   }
-/* 210:    */   
-/* 211:    */   public void setFromPwd(String fromPwd)
-/* 212:    */   {
-/* 213:198 */     this.fromPwd = fromPwd;
-/* 214:    */   }
-/* 215:    */   
-/* 216:    */   public MyAuthenticator getAuth()
-/* 217:    */   {
-/* 218:201 */     return this.auth;
-/* 219:    */   }
-/* 220:    */   
-/* 221:    */   public void setAuth(MyAuthenticator auth)
-/* 222:    */   {
-/* 223:204 */     this.auth = auth;
-/* 224:    */   }
-/* 225:    */ }
+package dinghan.workflow.beans;
 
-
-/* Location:           F:\oa_back\oacustom\custom_class\
- * Qualified Name:     dinghan.workflow.beans.KQMail
- * JD-Core Version:    0.7.0.1
- */
+import java.util.Properties;
+
+//import javax.activation.DataHandler;
+//import javax.activation.FileDataSource;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
+
+import dinghan.workflow.service.kqservice.MyAuthenticator;
+//import sun.misc.BASE64Encoder;
+
+public class KQMail {
+	
+	private String host = null;	//服务器信息：IP地址或smtp.dinghantech.com
+	private String port = "25"; //SMTP端口号：默认25
+	private boolean validate = false; //是否需要登陆验证，默认不需要
+	private String[] recipients = null;  //收件人地址
+	private String[] recipientsName=null; //收件人名称
+	private String subject   = null;  //邮件主题 
+	private String content   = null;  //邮件内容 
+	private String contentType  = null;  //邮件内容格式(text或html) 
+	private String filePath  = null;  //附件路径 ，目前只提供一个附件，必须是服务器上的文件
+	private String from=null; //发件人地址
+	private String fromName=null;//发件人姓名
+	private String fromPwd=null; //发件人邮箱密码
+	private MyAuthenticator auth = null; //验证信息
+	
+	//发送不带附件的邮件(包括文本格式和html两种格式) 
+	public void sendMail() throws MessagingException,Exception{
+		 
+		 if(this.recipients!=null && this.recipients.length>0){
+			 Properties props = new Properties(); 
+			 //设置邮件服务器地址，连接超时时限等信息
+			 props.put("mail.smtp.host", this.host);
+		     props.put("mail.smtp.port", this.port);
+		     props.put("mail.smtp.auth", this.validate); 
+		     props.put("mail.smtp.connectiontimeout", "30000"); //连接超时：10s
+		     //props.put("mail.smtp.timeout", "30000");   //发送超时：30s
+		       
+		     //创建缺省的session对象 
+		     if(this.validate){
+		    	 this.auth = new MyAuthenticator(this.from, this.fromPwd);
+		     }
+		     
+		     Session session = Session.getDefaultInstance(props, this.auth); 
+		     //创建message对象 
+		     Message msg = new MimeMessage(session); 
+		     //发件人
+		     InternetAddress addressFrom = new InternetAddress(this.from,this.fromName); 
+		     msg.setFrom(addressFrom);   
+		     //收件人
+		     InternetAddress[] addressTo = new InternetAddress[this.recipients.length]; 
+		     for (int i = 0; i < this.recipients.length; i++){ 
+		         addressTo[i] = new InternetAddress(this.recipients[i],this.recipientsName[i]); 
+		     } 
+		     msg.setRecipients(Message.RecipientType.TO, addressTo); 
+		     //设置邮件标题，中文编码
+		     //this.subject = MimeUtility.encodeText(new String(this.subject.getBytes(), "GB2312"), "GB2312", "B");
+		     msg.setSubject(this.subject);
+		     //设置邮件内容,区分文本格式和HTML格式 
+		     if (this.contentType == null || this.contentType.equals("text")) { 
+		    	 msg.setText(this.content); 
+		     } else if (this.contentType.equals("html")) { 
+		    	 //设置正文内容 
+		    	 Multipart mmp = new MimeMultipart();//新建一个MimeMultipart对象用来存放BodyPart对象(事实上可以存放多个)
+		    	 BodyPart mbp1 = new MimeBodyPart(); //新建一个存放信件内容的BodyPart对象 
+		    	 mbp1.setContent(this.content, "text/html;charset=utf-8"); //给BodyPart对象设置内容和格式/编码方式
+		    	 mmp.addBodyPart(mbp1); 
+		    	 
+		    	 /*if (this.filePath!=null && this.filePath!="") {
+					//设置邮件附件 
+					BodyPart mbp2 = new MimeBodyPart();
+					FileDataSource fileDataSource = new FileDataSource(this.filePath);
+					if(fileDataSource.getFile().exists()){
+						mbp2.setDataHandler(new DataHandler(fileDataSource));
+						BASE64Encoder enc = new BASE64Encoder();
+						mbp2.setFileName("=?GB2312?B?"+enc.encode(fileDataSource.getName().getBytes())+"?=");
+						mmp.addBodyPart(mbp2);
+					}else{
+						System.out.println("文件不存在："+this.filePath);
+					}
+				}*/
+		    	 
+				msg.setContent(mmp);	//把mmp作为消息对象的内容 
+		     } 
+		     
+		     //设置邮件发送时间 
+		     msg.setSentDate(new java.util.Date()); 
+		     //调用抽象类的静态方法send()发送邮件 
+		     Transport.send(msg); 
+		 }  
+	}
+	
+	//＝＝＝＝set\get方法区＝＝＝＝＝＝＝＝＝＝＝
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getPort() {
+		return port;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
+	}
+
+	public boolean isValidate() {
+		return validate;
+	}
+
+	public void setValidate(boolean validate) {
+		this.validate = validate;
+	}
+
+	public String[] getRecipients() {
+		return recipients;
+	}
+
+	public void setRecipients(String[] recipients) {
+		this.recipients = recipients;
+	}
+
+	public String[] getRecipientsName() {
+		return recipientsName;
+	}
+
+	public void setRecipientsName(String[] recipientsName) {
+		this.recipientsName = recipientsName;
+	}
+
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
+
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+
+	public String getFromName() {
+		return fromName;
+	}
+
+	public void setFromName(String fromName) {
+		this.fromName = fromName;
+	}
+
+	public String getFromPwd() {
+		return fromPwd;
+	}
+
+	public void setFromPwd(String fromPwd) {
+		this.fromPwd = fromPwd;
+	}
+	public MyAuthenticator getAuth() {
+		return auth;
+	}
+	public void setAuth(MyAuthenticator auth) {
+		this.auth = auth;
+	}
+}

@@ -1,69 +1,71 @@
-/*  1:   */ package weaver.dh.interfaces;
-/*  2:   */ 
-/*  3:   */ import java.util.Iterator;
-/*  4:   */ import java.util.List;
-/*  5:   */ import org.dom4j.Document;
-/*  6:   */ import org.dom4j.DocumentHelper;
-/*  7:   */ import org.dom4j.Element;
-/*  8:   */ import weaver.conn.RecordSet;
-/*  9:   */ import weaver.general.BaseBean;
-/* 10:   */ 
-/* 11:   */ public class toMiddleTableImp
-/* 12:   */   implements toMiddleTable
-/* 13:   */ {
-/* 14:22 */   BaseBean bs = new BaseBean();
-/* 15:   */   
-/* 16:   */   public void execute(String xml, String tableName, String flag)
-/* 17:   */   {
-/* 18:   */     try
-/* 19:   */     {
-/* 20:27 */       this.bs.writeLog(" 接口XML " + xml + " ");
-/* 21:   */       
-/* 22:29 */       Document doc = DocumentHelper.parseText(xml);
-/* 23:   */       
-/* 24:   */ 
-/* 25:   */ 
-/* 26:   */ 
-/* 27:   */ 
-/* 28:   */ 
-/* 29:   */ 
-/* 30:   */ 
-/* 31:   */ 
-/* 32:39 */       Element root = doc.getRootElement();
-/* 33:40 */       List<Element> childList = root.elements();
-/* 34:41 */       for (int i = 0; i < childList.size(); i++)
-/* 35:   */       {
-/* 36:42 */         RecordSet rst = new RecordSet();
-/* 37:43 */         String insertSqlBase = "insert into " + tableName + "(";
-/* 38:44 */         String insertSqlBaseValue = "values(";
-/* 39:45 */         Iterator fields = ((Element)childList.get(i)).elementIterator();
-/* 40:46 */         while (fields.hasNext())
-/* 41:   */         {
-/* 42:47 */           Element Field = (Element)fields.next();
-/* 43:48 */           String ColName = Field.attributeValue("ColName");
-/* 44:49 */           String Value = Field.attributeValue("Value");
-/* 45:50 */           insertSqlBase = insertSqlBase + ColName + ",";
-/* 46:51 */           insertSqlBaseValue = insertSqlBaseValue + "'" + Value + "',";
-/* 47:   */         }
-/* 48:53 */         if (insertSqlBase.endsWith(",")) {
-/* 49:54 */           insertSqlBase = insertSqlBase.substring(0, insertSqlBase.length() - 1) + ")";
-/* 50:   */         }
-/* 51:55 */         if (insertSqlBaseValue.endsWith(",")) {
-/* 52:56 */           insertSqlBaseValue = insertSqlBaseValue.substring(0, insertSqlBaseValue.length() - 1) + ")";
-/* 53:   */         }
-/* 54:58 */         this.bs.writeLog("executeSqlBase " + insertSqlBase + " " + insertSqlBaseValue);
-/* 55:59 */         rst.executeSql(insertSqlBase + " " + insertSqlBaseValue);
-/* 56:   */       }
-/* 57:   */     }
-/* 58:   */     catch (Exception e)
-/* 59:   */     {
-/* 60:65 */       e.printStackTrace();
-/* 61:   */     }
-/* 62:   */   }
-/* 63:   */ }
+package weaver.dh.interfaces;
 
-
-/* Location:           F:\oa_back\oacustom\custom_class\dh\interfaces\
- * Qualified Name:     weaver.dh.interfaces.toMiddleTableImp
- * JD-Core Version:    0.7.0.1
- */
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.util.Iterator;
+import java.util.List;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
+
+import weaver.conn.RecordSet;
+import weaver.formmode.setup.ModeRightInfo;
+import weaver.general.BaseBean;
+import weaver.general.Util;
+
+public class toMiddleTableImp implements toMiddleTable {
+	BaseBean bs = new BaseBean();
+
+	@Override
+	public void execute(String xml,String tableName, String flag) {
+		try{
+		bs.writeLog(" 接口XML "+xml+" ");
+
+		 Document doc = DocumentHelper.parseText(xml);
+        /* OutputFormat format = OutputFormat.createPrettyPrint();  
+         //设置编码  
+         format.setEncoding("UTF-8");  
+         //XMLWriter 指定输出文件以及格式  
+         XMLWriter writer = new XMLWriter(new OutputStreamWriter(new FileOutputStream(new File("/synHr.xml")),"UTF-8"), format);  
+         //写入新文件  
+         writer.write(doc);  
+         writer.flush();  
+         writer.close(); */
+		 Element root = doc.getRootElement();
+		 List<Element> childList = root.elements();
+		 for(int i=0;i<childList.size();i++){
+			 RecordSet rst = new RecordSet();
+			 String insertSqlBase ="insert into "+tableName+"(";
+			 String insertSqlBaseValue ="values(";
+			 Iterator fields =  childList.get(i).elementIterator();
+			 while(fields.hasNext()){
+				 Element Field = (Element)fields.next();
+				 String ColName = Field.attributeValue("ColName");
+				 String Value = Field.attributeValue("Value");
+				 insertSqlBase+=ColName+",";
+				 insertSqlBaseValue += "'"+Value+"',";
+			 }
+			if(insertSqlBase.endsWith(",")){
+				insertSqlBase= insertSqlBase.substring(0, insertSqlBase.length()-1)+")";
+			}if(insertSqlBaseValue.endsWith(",")){
+				insertSqlBaseValue = insertSqlBaseValue.substring(0, insertSqlBaseValue.length()-1)+")";
+			}
+			bs.writeLog("executeSqlBase "+insertSqlBase+" "+insertSqlBaseValue);
+			rst.executeSql(insertSqlBase+" "+insertSqlBaseValue);
+			
+		/*	ModeRightInfo ModeRightInfo = new ModeRightInfo();
+			ModeRightInfo.editModeDataShare(Util.getIntValue(RequestInfo.getCreatorid(),0),modeid,m_billid);*/
+		 }
+	   }catch(Exception e){
+		   e.printStackTrace();
+	   }
+	}
+
+	
+
+}
